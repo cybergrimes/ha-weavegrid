@@ -12,7 +12,7 @@ from homeassistant.components.sensor import (
     SensorEntityDescription,
     SensorStateClass,
 )
-from homeassistant.const import PERCENTAGE, UnitOfEnergy, UnitOfLength
+from homeassistant.const import PERCENTAGE, UnitOfEnergy
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 from homeassistant.util import dt as dt_util
@@ -29,6 +29,7 @@ MC_STATUS_OPTIONS = [
     "active",
     "inactive",
     "pending",
+    "scheduled",
     "unknown",
 ]
 
@@ -123,38 +124,6 @@ DESCRIPTIONS: tuple[WeaveGridSensorDescription, ...] = (
         options=MC_STATUS_OPTIONS,
         value_fn=lambda data: (
             data.device_status.mc_plan_status.mc_status.lower()
-            if data.device_status.mc_plan_status
-            else None
-        ),
-    ),
-    WeaveGridSensorDescription(
-        key="miles_added",
-        translation_key="miles_added",
-        device_class=SensorDeviceClass.DISTANCE,
-        native_unit_of_measurement=UnitOfLength.MILES,
-        suggested_display_precision=0,
-        value_fn=lambda data: (
-            data.device_status.mc_plan_status.miles_added_by_ready_by_time
-            if data.device_status.mc_plan_status
-            else None
-        ),
-    ),
-    WeaveGridSensorDescription(
-        key="battery_level",
-        translation_key="battery_level",
-        device_class=SensorDeviceClass.BATTERY,
-        native_unit_of_measurement=PERCENTAGE,
-        state_class=SensorStateClass.MEASUREMENT,
-        value_fn=lambda data: data.device_status.battery_soc,
-    ),
-    WeaveGridSensorDescription(
-        key="charge_start_time",
-        translation_key="charge_start_time",
-        device_class=SensorDeviceClass.TIMESTAMP,
-        value_fn=lambda data: (
-            _parse_timestamp(
-                data.device_status.mc_plan_status.charge_start_dttm
-            )
             if data.device_status.mc_plan_status
             else None
         ),

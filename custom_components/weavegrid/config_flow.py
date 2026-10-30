@@ -7,23 +7,41 @@ from typing import Any
 
 import voluptuous as vol
 
-from homeassistant.config_entries import ConfigFlow, ConfigFlowResult
+from homeassistant.config_entries import (
+    ConfigEntry,
+    ConfigFlow,
+    ConfigFlowResult,
+    OptionsFlow,
+)
 from homeassistant.const import CONF_EMAIL, CONF_PASSWORD
 from homeassistant.helpers.aiohttp_client import async_create_clientsession
 from homeassistant.helpers.selector import (
+    SelectSelector,
+    SelectSelectorConfig,
     TextSelector,
     TextSelectorConfig,
     TextSelectorType,
 )
 
 from .api import WeaveGridAuthError, WeaveGridClient, WeaveGridConnectionError
-from .const import DOMAIN, LOGGER
+from .const import (
+    CONF_POLL_INTERVAL,
+    DEFAULT_POLL_INTERVAL,
+    DOMAIN,
+    LOGGER,
+    POLL_INTERVAL_OPTIONS,
+)
 
 
 class WeaveGridFlowHandler(ConfigFlow, domain=DOMAIN):
     """Handle a WeaveGrid config flow."""
 
     VERSION = 1
+
+    @staticmethod
+    def async_get_options_flow(config_entry: ConfigEntry) -> OptionsFlow:
+        """Get the options flow for this handler."""
+        return WeaveGridOptionsFlowHandler()
 
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
@@ -112,4 +130,36 @@ class WeaveGridFlowHandler(ConfigFlow, domain=DOMAIN):
                 }
             ),
             errors=errors,
+        )
+
+
+class WeaveGridOptionsFlowHandler(OptionsFlow):
+    """Handle WeaveGrid integration options."""
+
+    async def async_step_init(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """Manage the polling interval."""
+        if user_input is not None:
+            user_input[CONF_POLL_INTERVAL] = int(
+                user_input[CONF_POLL_INTERVAL]
+            )
+            return self.async_create_entry(title="", data=user_input)
+
+        return self.async_show_form(
+            step_id="init",
+            data_schema=vol.Schema(
+                {
+                    vol.Required(
+                        CONF_POLL_INTERVAL,
+                        default=str(
+                            self.config_entry.options.get(
+                                CONF_POLL_INTERVAL, DEFAULT_POLL_INTERVAL
+                            )
+                        ),
+                    ): SelectSelector(
+                        SelectSelectorConfig(options=list(POLL_INTERVAL_OPTIONS))
+                    ),
+                }
+            ),
         )

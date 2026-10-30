@@ -58,8 +58,6 @@ class McPlanStatus:
     plan_is_active: bool
     optimization: str
     ready_by_dttm: str | None
-    charge_start_dttm: str | None
-    miles_added_by_ready_by_time: float | None
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> McPlanStatus:
@@ -69,29 +67,24 @@ class McPlanStatus:
             plan_is_active=data["planIsActive"],
             optimization=data["optimization"],
             ready_by_dttm=data.get("readyByDttm"),
-            charge_start_dttm=data.get("chargeStartDttm"),
-            miles_added_by_ready_by_time=data.get("milesAddedByReadyByTime"),
         )
 
 
 @dataclass
 class DeviceStatus:
-    """Device status from DeviceStatusCard query."""
+    """Device status from vehicle data."""
 
     mc_plan_status: McPlanStatus | None
-    battery_soc: float | None
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> DeviceStatus:
         """Create from API vehicle data dict."""
-        battery = data.get("batteryStatus")
         return cls(
             mc_plan_status=(
                 McPlanStatus.from_dict(data["mcPlanStatus"])
                 if data.get("mcPlanStatus")
                 else None
             ),
-            battery_soc=battery["currentSoc"] if battery else None,
         )
 
 

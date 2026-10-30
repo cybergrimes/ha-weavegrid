@@ -6,8 +6,8 @@ A Home Assistant integration for [WeaveGrid](https://www.weavegrid.com/), a mana
 
 ## Features
 
-- **Binary sensors**: Charging status, plugged in, home presence, charge plan active, peak avoidance
-- **Sensors**: Weekly energy/cost, off-peak energy/cost, smart charging cost, smart score, battery level, charge times, managed charge status, charge history, electricity rate
+- **Binary sensors**: Charging status, plugged in, home presence, peak avoidance
+- **Sensors**: Weekly energy/cost, off-peak energy/cost, smart charging cost, smart score, charge times, managed charge status, charge history, electricity rate
 - Automatic device creation per vehicle/EVSE
 - Reauthorization support
 
@@ -32,6 +32,7 @@ A Home Assistant integration for [WeaveGrid](https://www.weavegrid.com/), a mana
 2. Search for **WeaveGrid**
 3. Enter your WeaveGrid account email and password
 4. The integration will auto-detect your utility and create devices for each registered vehicle/EVSE
+5. To change the polling interval, open the integration's options and choose 5, 15, or 30 minutes
 
 ## Entities
 
@@ -42,7 +43,6 @@ A Home Assistant integration for [WeaveGrid](https://www.weavegrid.com/), a mana
 | Charging | Whether the vehicle is currently charging |
 | Plugged in | Whether the vehicle is plugged in |
 | Home | Whether the vehicle is at the home location |
-| Charge plan active | Whether a managed charge plan is currently running |
 | Peak avoidance | Whether peak avoidance is enabled |
 
 ### Sensors
@@ -55,9 +55,6 @@ A Home Assistant integration for [WeaveGrid](https://www.weavegrid.com/), a mana
 | Last charge energy | Energy delivered in most recent charge session (kWh) |
 | Last charge cost | Cost of most recent charge session (USD) |
 | Managed charge status | Current managed charge plan status |
-| Miles added | Miles of range added by the charge plan |
-| Battery level | Current battery state of charge (%) |
-| Charge start time | When the current/last charge session started |
 | Ready by time | When charging is expected to complete |
 | Weekly off-peak energy | Off-peak energy delivered this week (kWh) |
 | Weekly off-peak cost | Off-peak charging cost this week (USD) |
@@ -70,7 +67,7 @@ A Home Assistant integration for [WeaveGrid](https://www.weavegrid.com/), a mana
 
 ## Notes
 
-- Data is polled every 5 minutes
+- Data is polled every 15 minutes by default; choose 5, 15, or 30 minutes in the integration options
+- Dashboard and vehicle details are fetched in one GraphQL operation per update
 - The integration uses WeaveGrid's GraphQL API with cookie-based session authentication
 - Charge aggregates show a rolling 7-day window
-- Battery level is available for vehicles with battery reporting (may be null for standalone EVSEs)

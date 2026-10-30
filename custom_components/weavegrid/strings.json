@@ -30,6 +30,18 @@
       "reauth_successful": "[%key:common::config_flow::abort::reauth_successful%]"
     }
   },
+  "options": {
+    "step": {
+      "init": {
+        "data": {
+          "poll_interval": "Polling interval"
+        },
+        "data_description": {
+          "poll_interval": "How often to fetch data from WeaveGrid."
+        }
+      }
+    }
+  },
   "entity": {
     "sensor": {
       "weekly_energy": {
@@ -56,15 +68,6 @@
           "pending": "Pending",
           "unknown": "Unknown"
         }
-      },
-      "miles_added": {
-        "name": "Miles added"
-      },
-      "battery_level": {
-        "name": "Battery level"
-      },
-      "charge_start_time": {
-        "name": "Charge start time"
       },
       "ready_by_time": {
         "name": "Ready by time"
@@ -103,9 +106,6 @@
       },
       "home": {
         "name": "Home"
-      },
-      "plan_active": {
-        "name": "Charge plan active"
       },
       "peak_avoidance": {
         "name": "Peak avoidance"
