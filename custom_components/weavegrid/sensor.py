@@ -29,6 +29,7 @@ MC_STATUS_OPTIONS = [
     "active",
     "inactive",
     "pending",
+    "scheduled",
     "unknown",
 ]
 
