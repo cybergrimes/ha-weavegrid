@@ -65,7 +65,7 @@ class WeaveGridClient:
             variables={
                 "startDttm": start_dttm,
                 "endDttm": end_dttm,
-                "limit": 1000,
+                "limit": 100,
                 "chargeEventsLimit": 5,
                 "locationRelationshipTypes": ["home_primary"],
             },
