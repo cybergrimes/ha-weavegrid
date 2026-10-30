@@ -75,26 +75,5 @@ class WeaveGridDataUpdateCoordinator(
         self, start_dttm: str, end_dttm: str
     ) -> dict[str, WeaveGridData]:
         """Fetch all vehicle data."""
-        vehicles = await self.client.get_dashboard_data()
-        result: dict[str, WeaveGridData] = {}
-        for vehicle in vehicles:
-            device_status = await self.client.get_device_status(
-                vehicle.vehicle_id
-            )
-            aggregates = await self.client.get_charge_aggregates(
-                vehicle.vehicle_id, start_dttm, end_dttm
-            )
-            settings = await self.client.get_managed_charge_settings(
-                vehicle.vehicle_id
-            )
-            charge_history = await self.client.get_charge_history(
-                vehicle.vehicle_id
-            )
-            result[vehicle.vehicle_id] = WeaveGridData(
-                vehicle=vehicle,
-                device_status=device_status,
-                aggregates=aggregates,
-                settings=settings,
-                charge_history=charge_history,
-            )
-        return result
+        vehicles = await self.client.get_vehicle_data(start_dttm, end_dttm)
+        return {vehicle.vehicle.vehicle_id: vehicle for vehicle in vehicles}

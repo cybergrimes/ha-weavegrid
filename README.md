@@ -71,6 +71,7 @@ A Home Assistant integration for [WeaveGrid](https://www.weavegrid.com/), a mana
 ## Notes
 
 - Data is polled every 5 minutes
+- Dashboard and vehicle details are fetched in one GraphQL operation per update
 - The integration uses WeaveGrid's GraphQL API with cookie-based session authentication
 - Charge aggregates show a rolling 7-day window
 - Battery level is available for vehicles with battery reporting (may be null for standalone EVSEs)

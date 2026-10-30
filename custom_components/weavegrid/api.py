@@ -7,12 +7,8 @@ import aiohttp
 from .const import (
     API_URL,
     LOGGER,
-    QUERY_CHARGE_AGGREGATES,
-    QUERY_CHARGE_HISTORY,
-    QUERY_DASHBOARD_DATA,
-    QUERY_DEVICE_STATUS,
     QUERY_LOGIN,
-    QUERY_MANAGED_CHARGE_SETTINGS,
+    QUERY_VEHICLE_DATA,
 )
 from .models import (
     ChargeAggregates,
@@ -21,6 +17,7 @@ from .models import (
     LoginResult,
     ManagedChargeSettings,
     Vehicle,
+    WeaveGridData,
 )
 
 
@@ -59,82 +56,42 @@ class WeaveGridClient:
         self._utility_acronym = result.utility_acronym
         return result
 
-    async def get_dashboard_data(self) -> list[Vehicle]:
-        """Fetch dashboard data with vehicle list."""
+    async def get_vehicle_data(
+        self, start_dttm: str, end_dttm: str
+    ) -> list[WeaveGridData]:
+        """Fetch dashboard and vehicle details in one GraphQL operation."""
         data = await self._execute(
-            query=QUERY_DASHBOARD_DATA,
-            variables={},
-            operation_name="DashboardData",
-        )
-        return [
-            Vehicle.from_dict(v)
-            for v in data["data"]["viewer"]["vehicles"]["data"]
-        ]
-
-    async def get_device_status(self, vehicle_id: str) -> DeviceStatus:
-        """Fetch device status for a vehicle."""
-        data = await self._execute(
-            query=QUERY_DEVICE_STATUS,
-            variables={"vehicleId": vehicle_id},
-            operation_name="DeviceStatusCard",
-        )
-        vehicles = data["data"]["viewer"]["vehicles"]["data"]
-        return DeviceStatus.from_dict(vehicles[0])
-
-    async def get_charge_aggregates(
-        self,
-        vehicle_id: str,
-        start_dttm: str,
-        end_dttm: str,
-    ) -> ChargeAggregates:
-        """Fetch charge event aggregates for a vehicle."""
-        data = await self._execute(
-            query=QUERY_CHARGE_AGGREGATES,
+            query=QUERY_VEHICLE_DATA,
             variables={
-                "vehicleId": vehicle_id,
                 "startDttm": start_dttm,
                 "endDttm": end_dttm,
                 "limit": 1000,
-            },
-            operation_name="ChargeEventAggregates",
-        )
-        charge_events = (
-            data["data"]["viewer"]["vehicles"]["data"][0]["chargeEvents"]
-        )
-        return ChargeAggregates.from_dict(charge_events)
-
-    async def get_managed_charge_settings(
-        self, vehicle_id: str
-    ) -> ManagedChargeSettings | None:
-        """Fetch managed charge settings for a vehicle."""
-        data = await self._execute(
-            query=QUERY_MANAGED_CHARGE_SETTINGS,
-            variables={"vehicleId": vehicle_id},
-            operation_name="ManagedChargeSettings",
-        )
-        vehicles = data["data"]["viewer"]["vehicles"]["data"]
-        if vehicles and vehicles[0].get("mcSettings"):
-            return ManagedChargeSettings.from_dict(vehicles[0])
-        return None
-
-    async def get_charge_history(
-        self, vehicle_id: str
-    ) -> ChargeHistory | None:
-        """Fetch recent charge history for a vehicle."""
-        data = await self._execute(
-            query=QUERY_CHARGE_HISTORY,
-            variables={
-                "vehicleId": vehicle_id,
                 "chargeEventsLimit": 5,
                 "locationRelationshipTypes": ["home_primary"],
-                "includeArchivedRegistrations": True,
             },
-            operation_name="userVehiclesHomeChargeHistory",
+            operation_name="DashboardData",
         )
         vehicles = data["data"]["viewer"]["vehicles"]["data"]
-        if vehicles and vehicles[0].get("chargeEvents"):
-            return ChargeHistory.from_dict(vehicles[0]["chargeEvents"])
-        return None
+        return [
+            WeaveGridData(
+                vehicle=Vehicle.from_dict(vehicle),
+                device_status=DeviceStatus.from_dict(vehicle),
+                aggregates=ChargeAggregates.from_dict(
+                    vehicle["chargeEvents"]
+                ),
+                settings=(
+                    ManagedChargeSettings.from_dict(vehicle)
+                    if vehicle.get("mcSettings")
+                    else None
+                ),
+                charge_history=(
+                    ChargeHistory.from_dict(vehicle["chargeHistory"])
+                    if vehicle.get("chargeHistory")
+                    else None
+                ),
+            )
+            for vehicle in vehicles
+        ]
 
     async def _execute(
         self,

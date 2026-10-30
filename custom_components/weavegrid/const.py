@@ -25,11 +25,17 @@ mutation LoginDriver($email: String!, $password: String, $useMagicLink: Boolean)
 }
 """
 
-QUERY_DASHBOARD_DATA: Final = """
-query DashboardData {
+QUERY_VEHICLE_DATA: Final = """
+query DashboardData(
+  $startDttm: DateTime!,
+  $endDttm: DateTime!,
+  $limit: Int,
+  $chargeEventsLimit: Int,
+  $locationRelationshipTypes: [RelationshipTypeEnum]
+) {
   viewer {
     id
-    vehicles(includeArchivedRegistrations: true) {
+    vehicles(includeArchivedRegistrations: true, includeBatteryInfo: true) {
       data {
         vehicleId
         displayName
@@ -44,19 +50,6 @@ query DashboardData {
           isPluggedIn
           isHome
         }
-      }
-    }
-  }
-}
-"""
-
-QUERY_DEVICE_STATUS: Final = """
-query DeviceStatusCard($vehicleId: String!) {
-  viewer {
-    id
-    vehicles(vehicleId: $vehicleId, includeBatteryInfo: true) {
-      data {
-        vehicleId
         batteryStatus {
           currentSoc
         }
@@ -69,23 +62,18 @@ query DeviceStatusCard($vehicleId: String!) {
           milesAddedByReadyByTime
           socAtReadyByTime
         }
-      }
-    }
-  }
-}
-"""
-
-QUERY_CHARGE_AGGREGATES: Final = """
-query ChargeEventAggregates(
-  $vehicleId: String!,
-  $startDttm: DateTime!,
-  $endDttm: DateTime!,
-  $limit: Int
-) {
-  viewer {
-    vehicles(vehicleId: $vehicleId, includeArchivedRegistrations: true) {
-      data {
-        vehicleId
+        mcSettings {
+          chargeByTimes {
+            Mon
+            Tue
+            Wed
+            Thu
+            Fri
+            Sat
+            Sun
+          }
+          enablePeakAvoidance
+        }
         chargeEvents(
           inclusiveStartDttm: $startDttm
           inclusiveEndDttm: $endDttm
@@ -119,53 +107,7 @@ query ChargeEventAggregates(
             }
           }
         }
-      }
-    }
-  }
-}
-"""
-
-QUERY_MANAGED_CHARGE_SETTINGS: Final = """
-query ManagedChargeSettings($vehicleId: String!) {
-  viewer {
-    id
-    vehicles(vehicleId: $vehicleId, includeBatteryInfo: true) {
-      data {
-        vehicleId
-        mcSettings {
-          chargeByTimes {
-            Mon
-            Tue
-            Wed
-            Thu
-            Fri
-            Sat
-            Sun
-          }
-          enablePeakAvoidance
-        }
-      }
-    }
-  }
-}
-"""
-
-QUERY_CHARGE_HISTORY: Final = """
-query userVehiclesHomeChargeHistory(
-  $vehicleId: String,
-  $chargeEventsLimit: Int,
-  $locationRelationshipTypes: [RelationshipTypeEnum],
-  $includeArchivedRegistrations: Boolean
-) {
-  viewer {
-    id
-    vehicles(
-      vehicleId: $vehicleId
-      includeArchivedRegistrations: $includeArchivedRegistrations
-    ) {
-      data {
-        vehicleId
-        chargeEvents(
+        chargeHistory: chargeEvents(
           first: $chargeEventsLimit
           locationRelationshipTypes: $locationRelationshipTypes
         ) {
