@@ -47,15 +47,6 @@ DESCRIPTIONS: tuple[WeaveGridBinarySensorDescription, ...] = (
         is_on_fn=lambda data: data.vehicle.connectivity.is_home,
     ),
     WeaveGridBinarySensorDescription(
-        key="plan_active",
-        translation_key="plan_active",
-        is_on_fn=lambda data: (
-            data.device_status.mc_plan_status.plan_is_active
-            if data.device_status.mc_plan_status
-            else None
-        ),
-    ),
-    WeaveGridBinarySensorDescription(
         key="peak_avoidance",
         translation_key="peak_avoidance",
         is_on_fn=lambda data: (

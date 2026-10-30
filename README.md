@@ -6,7 +6,7 @@ A Home Assistant integration for [WeaveGrid](https://www.weavegrid.com/), a mana
 
 ## Features
 
-- **Binary sensors**: Charging status, plugged in, home presence, charge plan active, peak avoidance
+- **Binary sensors**: Charging status, plugged in, home presence, peak avoidance
 - **Sensors**: Weekly energy/cost, off-peak energy/cost, smart charging cost, smart score, charge times, managed charge status, charge history, electricity rate
 - Automatic device creation per vehicle/EVSE
 - Reauthorization support
@@ -43,7 +43,6 @@ A Home Assistant integration for [WeaveGrid](https://www.weavegrid.com/), a mana
 | Charging | Whether the vehicle is currently charging |
 | Plugged in | Whether the vehicle is plugged in |
 | Home | Whether the vehicle is at the home location |
-| Charge plan active | Whether a managed charge plan is currently running |
 | Peak avoidance | Whether peak avoidance is enabled |
 
 ### Sensors

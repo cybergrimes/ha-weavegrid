@@ -107,9 +107,6 @@
       "home": {
         "name": "Home"
       },
-      "plan_active": {
-        "name": "Charge plan active"
-      },
       "peak_avoidance": {
         "name": "Peak avoidance"
       }
