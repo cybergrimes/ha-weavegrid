@@ -4,6 +4,10 @@
 
 A Home Assistant integration for [WeaveGrid](https://www.weavegrid.com/), a managed EV charging platform that works with utilities (BGE, PG&E, etc.) to optimize EV charging schedules.
 
+## Acknowledgements
+
+This is a personal-use fork of [kvinck/ha-weavegrid](https://github.com/kvinck/ha-weavegrid). Thanks to @kvinck for creating the original integration. AI assistance was used to adapt it for my personal setup and reduce API requests. This fork is independently maintained and is not endorsed by the original author.
+
 ## Features
 
 - **Binary sensors**: Charging status, plugged in, home presence, peak avoidance
