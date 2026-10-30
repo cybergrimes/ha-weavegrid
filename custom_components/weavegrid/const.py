@@ -6,6 +6,13 @@ import logging
 from typing import Final
 
 DOMAIN: Final = "weavegrid"
+CONF_POLL_INTERVAL: Final = "poll_interval"
+DEFAULT_POLL_INTERVAL: Final = 15
+POLL_INTERVAL_OPTIONS: Final = (
+    {"value": "5", "label": "5 minutes"},
+    {"value": "15", "label": "15 minutes"},
+    {"value": "30", "label": "30 minutes"},
+)
 LOGGER = logging.getLogger(__package__)
 
 API_URL: Final = "https://charge.weavegrid.com/graphql"
@@ -35,7 +42,7 @@ query DashboardData(
 ) {
   viewer {
     id
-    vehicles(includeArchivedRegistrations: true, includeBatteryInfo: true) {
+    vehicles(includeArchivedRegistrations: true) {
       data {
         vehicleId
         displayName
@@ -50,17 +57,11 @@ query DashboardData(
           isPluggedIn
           isHome
         }
-        batteryStatus {
-          currentSoc
-        }
         mcPlanStatus {
           mcStatus
           planIsActive
           optimization
           readyByDttm
-          chargeStartDttm
-          milesAddedByReadyByTime
-          socAtReadyByTime
         }
         mcSettings {
           chargeByTimes {

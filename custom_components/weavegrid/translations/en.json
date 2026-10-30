@@ -30,6 +30,18 @@
             }
         }
     },
+    "options": {
+        "step": {
+            "init": {
+                "data": {
+                    "poll_interval": "Polling interval"
+                },
+                "data_description": {
+                    "poll_interval": "How often to fetch data from WeaveGrid."
+                }
+            }
+        }
+    },
     "entity": {
         "binary_sensor": {
             "charging": {
@@ -49,14 +61,8 @@
             }
         },
         "sensor": {
-            "battery_level": {
-                "name": "Battery level"
-            },
             "charge_by_time": {
                 "name": "Charge by time"
-            },
-            "charge_start_time": {
-                "name": "Charge start time"
             },
             "electricity_rate": {
                 "name": "Electricity rate"
@@ -85,9 +91,6 @@
                     "pending": "Pending",
                     "unknown": "Unknown"
                 }
-            },
-            "miles_added": {
-                "name": "Miles added"
             },
             "off_peak_cost": {
                 "name": "Weekly off-peak cost"

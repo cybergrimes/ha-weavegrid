@@ -13,7 +13,12 @@ from homeassistant.util import dt as dt_util
 from homeassistant.const import CONF_EMAIL, CONF_PASSWORD
 
 from .api import WeaveGridAuthError, WeaveGridClient, WeaveGridConnectionError
-from .const import DOMAIN, LOGGER
+from .const import (
+    CONF_POLL_INTERVAL,
+    DEFAULT_POLL_INTERVAL,
+    DOMAIN,
+    LOGGER,
+)
 from .models import WeaveGridData
 
 type WeaveGridConfigEntry = ConfigEntry[WeaveGridDataUpdateCoordinator]
@@ -38,7 +43,11 @@ class WeaveGridDataUpdateCoordinator(
             LOGGER,
             config_entry=entry,
             name=DOMAIN,
-            update_interval=timedelta(minutes=5),
+            update_interval=timedelta(
+                minutes=entry.options.get(
+                    CONF_POLL_INTERVAL, DEFAULT_POLL_INTERVAL
+                )
+            ),
         )
         self.client = client
 
