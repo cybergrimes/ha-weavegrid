@@ -2,7 +2,7 @@
   "domain": "weavegrid",
   "name": "WeaveGrid",
   "codeowners": [
-    "@kvinck"
+    "@cybergrimes"
   ],
   "config_flow": true,
   "documentation": "https://github.com/kvinck/ha-weavegrid",
@@ -10,5 +10,5 @@
   "iot_class": "cloud_polling",
   "issue_tracker": "https://github.com/kvinck/ha-weavegrid/issues",
   "requirements": [],
-  "version": "0.2.1"
+  "version": "0.2.2"
 }
