@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+from collections.abc import Mapping
 from typing import Final
 
 DOMAIN: Final = "weavegrid"
@@ -14,6 +15,12 @@ POLL_INTERVAL_OPTIONS: Final = (
     {"value": "30", "label": "30 minutes"},
 )
 LOGGER = logging.getLogger(__package__)
+
+
+def get_poll_interval(options: Mapping[str, int | str]) -> int:
+    """Return the configured polling interval or its default."""
+    return int(options.get(CONF_POLL_INTERVAL, DEFAULT_POLL_INTERVAL))
+
 
 API_URL: Final = "https://charge.weavegrid.com/graphql"
 

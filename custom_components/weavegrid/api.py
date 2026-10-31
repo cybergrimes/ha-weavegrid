@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from time import perf_counter
+
 import aiohttp
 
 from .const import (
@@ -111,15 +113,18 @@ class WeaveGridClient:
         if self._utility_acronym:
             headers["x-wg-utility-acronym"] = self._utility_acronym
 
+        operation = operation_name or "unknown"
+        request_started = perf_counter()
         try:
             async with self._session.post(
                 API_URL, json=[payload], headers=headers
             ) as resp:
-                response_text = await resp.text()
                 LOGGER.debug(
-                    "WeaveGrid API response (status=%s): %s",
+                    "WeaveGrid API request completed "
+                    "(operation=%s, status=%s, duration_ms=%.0f)",
+                    operation,
                     resp.status,
-                    response_text[:500],
+                    (perf_counter() - request_started) * 1000,
                 )
                 if resp.status == 401:
                     raise WeaveGridAuthError("Authentication failed (HTTP 401)")
@@ -133,16 +138,26 @@ class WeaveGridClient:
         except WeaveGridConnectionError:
             raise
         except aiohttp.ClientError as err:
-            LOGGER.debug("WeaveGrid aiohttp error: %s", err)
+            LOGGER.debug(
+                "WeaveGrid API request failed "
+                "(operation=%s, error_type=%s, duration_ms=%.0f)",
+                operation,
+                type(err).__name__,
+                (perf_counter() - request_started) * 1000,
+            )
             raise WeaveGridConnectionError(
-                f"Error communicating with WeaveGrid: {err}"
+                "Error communicating with WeaveGrid"
             ) from err
         except Exception as err:
             LOGGER.debug(
-                "WeaveGrid unexpected error: %s: %s", type(err).__name__, err
+                "WeaveGrid API request failed "
+                "(operation=%s, error_type=%s, duration_ms=%.0f)",
+                operation,
+                type(err).__name__,
+                (perf_counter() - request_started) * 1000,
             )
             raise WeaveGridConnectionError(
-                f"Unexpected error communicating with WeaveGrid: {err}"
+                "Unexpected error communicating with WeaveGrid"
             ) from err
 
         # API returns arrays - unwrap first element
@@ -151,9 +166,14 @@ class WeaveGridClient:
 
         if errors := result.get("errors"):
             first_error = errors[0].get("message", "Unknown error")
-            LOGGER.debug("WeaveGrid GraphQL error: %s", errors)
+            LOGGER.debug(
+                "WeaveGrid GraphQL operation failed "
+                "(operation=%s, error_count=%s)",
+                operation,
+                len(errors),
+            )
             if "auth" in first_error.lower() or "credentials" in first_error.lower():
-                raise WeaveGridAuthError(first_error)
-            raise WeaveGridConnectionError(first_error)
+                raise WeaveGridAuthError("Authentication failed")
+            raise WeaveGridConnectionError("GraphQL operation failed")
 
         return result
